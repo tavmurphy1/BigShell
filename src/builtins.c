@@ -67,7 +67,7 @@ builtin_null(struct command *cmd, struct builtin_redir const *redir_list)
  * It is an error if too many arguments are provided, or if the chdir operation
  * fails
  */
-static int
+static int 
 builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
 {
   char const *target_dir = 0;
@@ -88,10 +88,15 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
       dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: HOME not set\n");
       return -1;
     }
+  } else {
+    target_dir = cmd->words[1];
   }
-  /*TODO: Implement cd with arguments 
-   */
-  chdir(target_dir);
+  if (chdir(target_dir) < 0) {
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: %s: %s\n", target_dir, strerror(errno));
+      return -1;
+  } else {
+    vars_set("PWD", target_dir);
+  }
   return 0;
 }
 
