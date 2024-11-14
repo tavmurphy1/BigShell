@@ -117,10 +117,10 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 {
   /* TODO: Set params.status to the appropriate value before exiting */
   // handle too many args
-  if (cmd->wordcount > 2) {
+  if (cmd->word_count > 2) {
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: too many arguments\n");
     return -1;
-  } else if (cmd->wordcount == 2) {
+  } else if (cmd->word_count == 2) {
     // handle non numeric argument
     char *endptr;
     long int val = strtol(cmd->words[1], &endptr, 10);
@@ -171,7 +171,7 @@ static int
 builtin_unset(struct command *cmd, struct builtin_redir const *redir_list)
 {
   for (size_t i = 1; i < cmd->word_count; ++i) {
-    /* DONE: Unset variables */
+    /* TODO: Unset variables */
     char *word = cmd->words[i];
     vars_unset(word);
   }
