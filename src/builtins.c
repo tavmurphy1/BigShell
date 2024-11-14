@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include "builtins.h"
 #include "exit.h"
@@ -92,8 +93,8 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
     target_dir = cmd->words[1];
   }
   if (chdir(target_dir) < 0) {
-    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: %s: %s\n", target_dir, strerror(errno));
-      return -1;
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: target dir invalid\n");
+    return -1;
   } else {
     vars_set("PWD", target_dir);
   }
@@ -115,6 +116,21 @@ static int
 builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 {
   /* TODO: Set params.status to the appropriate value before exiting */
+  // handle too many args
+  if (cmd->wordcount > 2) {
+    dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: too many arguments\n");
+    return -1;
+  } else if (cmd->wordcount == 2) {
+    // handle non numeric argument
+    char *endptr;
+    long int val = strtol(cmd->words[1], &endptr, 10);
+    if (*endptr != '\0') {
+      dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: non numeric argument\n");
+      return -1;
+    } else {
+      params.status = (int) val;
+    }
+  }
   bigshell_exit();
   return -1;
 }
