@@ -11,7 +11,7 @@ struct builtin_redir {
 
 /* This is a function pointer typedef, representing functions with type
  * signature: int f(struct command *, struct builtin_redir const *redir_list)
- *
+ *f
  * Yep, C's type system is a doozy! Aren't you glad you don't need to do this
  * yourself? :)
  */
