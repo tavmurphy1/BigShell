@@ -535,14 +535,16 @@ run_command_list(struct command_list *cl)
          * -1 This sets up pipeline redirection
          *
          * [TODO] move upstream_pipefd to STDIN_FILENO  if it's valid
+        \*
          *
          * [TODO] move downstream_pipefd to STDOUT_FILENO if it's valid
          */
         if (upstream_pipefd != -1) {
+          dup2(upstream_pipefd, STDIN_FILENO);
 
         }
         if (downstream_pipefd != -1) {
-
+          dup2(downstream_pipefd, STDOUT_FILENO);
         }
 
         /* Now handle the remaining redirect operators from the command. */
