@@ -44,7 +44,7 @@ expand_command_words(struct command *cmd)
   }
   /* TODO DONE Assignment values */
   for (size_t i = 0; i < cmd->assignment_count; ++i) {
-    expand(&cmd->assignments[i]);
+    expand(&cmd->assignments[i]->value);
   }
 
   /* TODO DONE I/O Filenames */
