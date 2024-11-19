@@ -67,8 +67,14 @@ do_variable_assignment(struct command const *cmd, int export_all)
 {
   for (size_t i = 0; i < cmd->assignment_count; ++i) {
     struct assignment *a = cmd->assignments[i];
-    /* TODO Assign */
-    /* TODO Export (if export_all != 0) */
+    /* TODO DONE Assign */
+    if (vars_is_valid_varname(a->name)) {
+      vars_set(a->name, a->value);
+    }
+      //TODO DONE Export (if export_all != 0) */ {
+    if (export_all  != 0) {
+      setenv(a->name, a->value, 1);
+     }
   }
   return 0;
 }
@@ -141,8 +147,10 @@ static int
 move_fd(int src, int dst)
 {
   if (src == dst) return dst;
-  /* TODO move src to dst */
-  /* TODO close src */
+  /* TODO DONE move src to dst */
+  dup2(src, dst);
+  /* TODO DONE close src */
+  close(src);
   return dst;
 }
 
