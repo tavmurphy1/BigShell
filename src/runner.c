@@ -69,11 +69,12 @@ do_variable_assignment(struct command const *cmd, int export_all)
     struct assignment *a = cmd->assignments[i];
     /* TODO DONE Assign */
     if (vars_is_valid_varname(a->name)) {
+      
       vars_set(a->name, a->value);
     }
       //TODO DONE Export (if export_all != 0) */ {
     if (export_all  != 0) {
-      setenv(a->name, a->value, 1);
+      vars_export(a->name);
      }
   }
   return 0;
