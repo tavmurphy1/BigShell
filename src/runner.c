@@ -42,8 +42,15 @@ expand_command_words(struct command *cmd)
   for (size_t i = 0; i < cmd->word_count; ++i) {
     expand(&cmd->words[i]);
   }
-  /* TODO Assignment values */
-  /* TODO I/O Filenames */
+  /* TODO DONE Assignment values */
+  for (size_t i = 0; i < cmd->assignment_count; ++i) {
+    expand(&cmd->assignments[i]);
+  }
+
+  /* TODO DONE I/O Filenames */
+  for (size_t i = 0; i < cmd->io_redir_count; ++i) {
+    expand(&cmd->io_redirs[i]->filename);
+  }
   return 0;
 }
 
@@ -383,10 +390,10 @@ run_command_list(struct command_list *cl)
 
     /* Prepare to read from pipeline of previous command, if exists.
      *
-     * [TODO] Update upstream_pipefd initializer to get the (READ) side of the
-     *        pipeline saved from the previous command
+     * [TODO DONE] Update upstream_pipefd initializer to get the (READ) side of the
+     *        pipeline saved from the previous command DONE
      */
-    int const upstream_pipefd = -1;
+    int const upstream_pipefd = pipeline_data.pipe_fd; //Prior command was set in pipeline data outside of loop
     int const has_upstream_pipe = (upstream_pipefd >= 0);
 
     /* If the current command is a pipeline command, create a new pipe on
@@ -402,11 +409,17 @@ run_command_list(struct command_list *cl)
      * Note that the initialized values of -1 should be kept if no pipe is
      * created. They indicate the lack of a pipe.
      *
-     * [TODO] Create new pipe if needed
+     * [TODO DONE] Create new pipe if needed
      *
-     * [TODO] Handle errors that occur
+     * [TODO DONE] Handle errors that occur
      */
     int pipe_fds[2] = {-1, -1};
+    if (is_pl) {
+      if (pipe(pipe_fds) == -1) {
+                perror("pipe");
+                exit(EXIT_FAILURE);
+            }
+    }
 
     /* Grab the WRITE side of the pipeline we just created */
     int const downstream_pipefd = pipe_fds[STDOUT_FILENO];
@@ -423,15 +436,22 @@ run_command_list(struct command_list *cl)
 
     pid_t child_pid = 0;
     /*
-     * [TODO] Fork process if:
+     * [TODO DONE] Fork process if:
      *       Not a buitin command, OR
      *       Not a foreground command
-     * [TODO] Re-assign child_pid to the new process id
-     * [TODO] Handle errors if they occur
+     * [TODO DONE] Re-assign child_pid to the new process id
+     * [TODO DONE] Handle errors if they occur
      */
-    int const did_fork = 0; /* TODO */
+    if ((!is_builtin) || (!is_fg)) {
+      child_pid = fork();
+      if (child_pid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+      }
+    }
+    int const did_fork = (child_pid != 0); /* TODO DONE*/
     if (did_fork) {
-      /* [TODO] fork */
+      /* [TODO DONE] fork */
 
       /* All of the processes in a pipeline (or single command) belong to the
        * same process group. This is how the shell manages job control. We will
@@ -518,6 +538,12 @@ run_command_list(struct command_list *cl)
          *
          * [TODO] move downstream_pipefd to STDOUT_FILENO if it's valid
          */
+        if (upstream_pipefd != -1) {
+
+        }
+        if (downstream_pipefd != -1) {
+
+        }
 
         /* Now handle the remaining redirect operators from the command. */
         if (do_io_redirects(cmd) < 0) err(1, 0);
@@ -531,7 +557,7 @@ run_command_list(struct command_list *cl)
         if (signal_restore() < 0) err(1, 0);
 
         /* Execute the command */
-        /* [TODO] execute the command described by the list of words
+        /* [TODO DONE] execute the command described by the list of words
          * (cmd->words).
          *
          *  XXX Carefully review man 3 exec. Choose the correct function that:

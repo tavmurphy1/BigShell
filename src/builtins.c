@@ -115,7 +115,8 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
 static int
 builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 {
-  /* TODO: Set params.status to the appropriate value before exiting */
+  /* TODO: Set params.status to the appropriate value before exiting DONE */
+
   // handle too many args
   if (cmd->word_count > 2) {
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: too many arguments\n");
@@ -171,7 +172,7 @@ static int
 builtin_unset(struct command *cmd, struct builtin_redir const *redir_list)
 {
   for (size_t i = 1; i < cmd->word_count; ++i) {
-    /* TODO: Unset variables */
+    /* TODO: Unset variables DONE */
     char *word = cmd->words[i];
     vars_unset(word);
   }
