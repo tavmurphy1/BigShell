@@ -45,7 +45,7 @@ wait_on_fg_pgid(pid_t const pgid)
   for (;;) {
     /* Wait on ALL processes in the process group 'pgid' */
     int status;
-    pid_t res = waitpid(/* TODO */ 0, &status, 0);
+    pid_t res = waitpid(/* TODO DONE */ -(pgid), &status, 0);
     if (res < 0) {
       /* Error occurred (some errors are ok, see below)
        *
@@ -57,14 +57,16 @@ wait_on_fg_pgid(pid_t const pgid)
         if (jobs_get_status(jid, &status) < 0) goto err;
         if (WIFEXITED(status)) {
           /* TODO set params.status to the correct value */
+          params.status =
         } else if (WIFSIGNALED(status)) {
           /* TODO set params.status to the correct value */
+          params.status = 
         }
 
         /* TODO remove the job for this group from the job list
          *  see jobs.h
          */
-        
+
         goto out;
       }
       goto err; /* An actual error occurred */
