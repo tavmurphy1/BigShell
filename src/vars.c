@@ -67,9 +67,7 @@ vars_is_valid_varname(char const *name)
 {
   /* TODO DONE: Implement argument validation before tail-calling internal
    * is_valid_varname() function. */
-  if (!name) {
-    return 0;
-  }
+  assert(name);
   if (is_valid_varname(name) == 1) {
     return 1;
   } else {
