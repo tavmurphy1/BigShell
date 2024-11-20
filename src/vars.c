@@ -51,7 +51,6 @@ is_valid_varname(char const *name)
     if (!isalnum(name[i]) && (name[i] != '_'))
       return 0;
     }
-  
   return 1;
 }
 
@@ -68,11 +67,7 @@ vars_is_valid_varname(char const *name)
   /* TODO DONE: Implement argument validation before tail-calling internal
    * is_valid_varname() function. */
   assert(name);
-  if (is_valid_varname(name) == 1) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return is_valid_varname(name);
 }
 
 /** returns nullptr if not found 
