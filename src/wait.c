@@ -25,10 +25,9 @@ wait_on_fg_pgid(pid_t const pgid)
   kill(pgid, SIGCONT);
 
   if (is_interactive) {
-    /* TODO make 'pgid' the foreground process group
+    /* TODO DONE make 'pgid' the foreground process group
      * XXX review tcsetpgrp(3) */
-    tcsetpgrp(pgid, jid);
-
+    tcsetpgrp(STDIN_FILENO, pgid);
   }
 
   /* XXX From this point on, all exit paths must account for setting bigshell
@@ -65,6 +64,7 @@ wait_on_fg_pgid(pid_t const pgid)
         /* TODO remove the job for this group from the job list
          *  see jobs.h
          */
+        
         goto out;
       }
       goto err; /* An actual error occurred */
