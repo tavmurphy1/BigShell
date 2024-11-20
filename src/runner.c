@@ -301,6 +301,11 @@ do_io_redirects(struct command *cmd)
          *
          * XXX What is n? Look for it in `struct io_redir->???` (parser.h)
          */
+
+        char *end = r->filename;
+        long src_fd = strtol(r->filename, &end, 10);
+
+        
       } else {
         /* The filename is interpreted as a file descriptor number to
          * redirect to. For example, 2>&1 duplicates file descriptor 1
@@ -563,9 +568,9 @@ run_command_list(struct command_list *cl)
          * they are assigned (export_all flag) */
         if (do_variable_assignment(cmd, 1) < 0) err(1, 0);
 
-        /* Restore signals to their original values when bigshell was invoked
+        /* TODO UNCOMMENT Restore signals to their original values when bigshell was invoked
          */
-        if (signal_restore() < 0) err(1, 0);
+       // if (signal_restore() < 0) err(1, 0);
 
         /* Execute the command */
         /* [TODO DONE] execute the command described by the list of words
