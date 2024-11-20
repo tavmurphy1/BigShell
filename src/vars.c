@@ -38,7 +38,7 @@ is_valid_varname(char const *name)
    *
    * You'll most definitely want to use functions from: ctype.h(0P)
    */
-  // 3.230
+  // Posix Definitions 3.230
   //"In the shell command language, a word consisting 
   //solely of underscores, digits, and alphabetics from the portable character set. 
   //The first character of a name is not a digit.""
