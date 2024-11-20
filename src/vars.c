@@ -31,7 +31,7 @@ static int
 is_valid_varname(char const *name)
 {
   assert(name);
-  /* TODO: Implement me.
+  /* TODO DONE: Implement me.
    * Refer to:
    *  3.230 Name. Base Definitions. POSIX.1-2008
    *  regex to match: [A-Za-z_][A-Za-z0-9_]*
@@ -48,7 +48,7 @@ is_valid_varname(char const *name)
   }
 
   for (size_t i = 1; name[i] != '\0'; ++i) {
-    if (!isalnum(name[i]) || (name[i] != '_'))
+    if (!isalnum(name[i]) && (name[i] != '_'))
       return 0;
     }
   
