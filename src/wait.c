@@ -45,7 +45,7 @@ wait_on_fg_pgid(pid_t const pgid)
   for (;;) {
     /* Wait on ALL processes in the process group 'pgid' */
     int status;
-    pid_t res = waitpid(/* TODO DONE */ -(pgid), &status, 0);
+    pid_t res = waitpid(/* TODO DONE */ -(pgid), &status, WUNTRACED);
     if (res < 0) {
       /* Error occurred (some errors are ok, see below)
        *
@@ -56,17 +56,16 @@ wait_on_fg_pgid(pid_t const pgid)
         errno = 0;
         if (jobs_get_status(jid, &status) < 0) goto err;
         if (WIFEXITED(status)) {
-          /* TODO set params.status to the correct value */
-          params.status =
+          /* TODO DONE set params.status to the correct value */
+          params.status = WEXITSTATUS(status);
         } else if (WIFSIGNALED(status)) {
-          /* TODO set params.status to the correct value */
-          params.status = 
+          /* TODO DONE set params.status to the correct value */
+          params.status = WTERMSIG(status);
         }
-
         /* TODO remove the job for this group from the job list
          *  see jobs.h
          */
-
+        jobs_remove_pgid(pgid);
         goto out;
       }
       goto err; /* An actual error occurred */
@@ -80,7 +79,7 @@ wait_on_fg_pgid(pid_t const pgid)
     /* TODO handle case where a child process is stopped
      *  The entire process group is placed in the background
      */
-    if (/* TODO */ 0) {
+    if (/* TODO DONE */ WIFSTOPPED(status)) {
       fprintf(stderr, "[%jd] Stopped\n", (intmax_t)jid);
       goto out;
     }
@@ -95,13 +94,14 @@ out:
   }
 
   if (is_interactive) {
-    /* TODO make bigshell the foreground process group again
+    /* TODO DONE make bigshell the foreground process group again
      * XXX review tcsetpgrp(3)
      *
      * Note: this will cause bigshell to receive a SIGTTOU signal.
      *       You need to also finish signal.c to have full functionality here.
      *       Otherwise you bigshell will get stopped.
      */
+    tcsetpgrp(STDIN_FILENO, getpgid(0));
   }
   return retval;
 }
@@ -127,7 +127,6 @@ wait_on_bg_jobs()
       /* TODO DONE: Modify the following line to wait for process group
        * XXX make sure to do a nonblocking wait!
        */
-      
       int status;
       pid_t pid = waitpid(pgid, &status, WNOHANG);
       if (pid == 0) {
