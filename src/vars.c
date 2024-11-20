@@ -42,15 +42,15 @@ is_valid_varname(char const *name)
   //"In the shell command language, a word consisting 
   //solely of underscores, digits, and alphabetics from the portable character set. 
   //The first character of a name is not a digit.""
-
   if (isdigit(name[0]) || (!isalpha(name[0]) && name[0] != '_')) {
     return 0;
   }
-
   for (size_t i = 1; name[i] != '\0'; ++i) {
-    if (!isalnum(name[i]) && (name[i] != '_'))
+    if (!isalnum(name[i]) && name[i] != '_') {
       return 0;
     }
+  }
+
   return 1;
 }
 

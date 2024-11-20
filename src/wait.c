@@ -101,7 +101,7 @@ out:
      *       You need to also finish signal.c to have full functionality here.
      *       Otherwise you bigshell will get stopped.
      */
-    tcsetpgrp(STDIN_FILENO, getpgid(0));
+    // TODO UNCOMMENT tcsetpgrp(STDIN_FILENO, getpgid(0));
   }
   return retval;
 }
