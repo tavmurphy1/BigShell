@@ -19,13 +19,16 @@ wait_on_fg_pgid(pid_t const pgid)
   jid_t const jid = jobs_get_jid(pgid);
   if (jid < 0) return -1;
   /* Make sure the foreground group is running */
-  /* TODO send the "continue" signal to the process group 'pgid'
+  /* TODO DONE send the "continue" signal to the process group 'pgid'
    * XXX review kill(2)
    */
+  kill(pgid, SIGCONT);
 
   if (is_interactive) {
     /* TODO make 'pgid' the foreground process group
      * XXX review tcsetpgrp(3) */
+    tcsetpgrp(pgid, jid);
+
   }
 
   /* XXX From this point on, all exit paths must account for setting bigshell
