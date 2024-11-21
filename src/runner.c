@@ -112,20 +112,20 @@ get_io_flags(enum io_operator io_op)
   switch (io_op) {
     case OP_LESSAND: /* <& */
     case OP_LESS:    /* < */
-      flags = 0;     /* TODO */
+      flags = O_RDONLY;     /* TODO DONE */
       break;
     case OP_GREATAND: /* >& */
     case OP_GREAT:    /* > */
-      flags = 0;      /* TODO */
+      flags = O_WRONLY | O_CREAT | O_EXCL;      /* TODO DONE */
       break;
     case OP_DGREAT: /* >> */
-      flags = 0;    /* TODO */
+      flags = O_APPEND;    /* TODO DONE */
       break;
     case OP_LESSGREAT: /* <> */
-      flags = 0;       /* TODO */
+      flags = O_RDWR;       /* TODO */
       break;
     case OP_CLOBBER: /* >| */
-      flags = 0;     /* TODO */
+      flags = O_TRUNC;     /* TODO */
       break;
   }
   return flags;
@@ -146,9 +146,14 @@ move_fd(int src, int dst)
 {
   if (src == dst) return dst;
   /* TODO DONE move src to dst */
-  dup2(src, dst);
+
+  if (dup2(src, dst) == -1) {
+    return -1;
+  }
   /* TODO DONE close src */
-  close(src);
+  if (close(src) == -1) {
+    return -1;
+  };
   return dst;
 }
 
@@ -302,7 +307,9 @@ do_io_redirects(struct command *cmd)
         char *end = r->filename;
         long src_fd = strtol(r->filename, &end, 10);
 
-        
+        if (close(src_fd) == -1) {
+          goto err;
+        }
       } else {
         /* The filename is interpreted as a file descriptor number to
          * redirect to. For example, 2>&1 duplicates file descriptor 1
@@ -324,7 +331,9 @@ do_io_redirects(struct command *cmd)
                                  downcasting */
         ) {
           /* TODO duplicate src to dst. */
-          dup2(src,dst);
+          if (dup2(src, r->io_number) == -1) {
+            goto err;
+          }
         } else {
           /* XXX Syntax error--(not a valid number)--we can "recover" by
            * attempting to open a file instead. That's what bash does.
@@ -343,9 +352,11 @@ do_io_redirects(struct command *cmd)
        * XXX Note: you can supply a mode to open() even if you're not creating a
        * file. it will just ignore that argument.
        */
+      int fd = open(r->filename, flags, 00700);
 
       /* TODO Move the opened file descriptor to the redirection target */
       /* XXX use move_fd() */
+      move_fd(fd, r->io_number);
     }
     if (0) {
     err: /* TODO Anything that can fail should jump here. No silent errors!!! */

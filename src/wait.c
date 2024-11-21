@@ -94,14 +94,14 @@ out:
   }
 
   if (is_interactive) {
-    /* TODO DONE make bigshell the foreground process group again
+    /* TODO DONE s
      * XXX review tcsetpgrp(3)
      *
      * Note: this will cause bigshell to receive a SIGTTOU signal.
      *       You need to also finish signal.c to have full functionality here.
-     *       Otherwise you bigshell will get stopped.
+     *       Otherwise your bigshell will get stopped.
      */
-    // TODO UNCOMMENT tcsetpgrp(STDIN_FILENO, getpgid(0));
+    tcsetpgrp(STDIN_FILENO, getpgid(0));
   }
   return retval;
 }
