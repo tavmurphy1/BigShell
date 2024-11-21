@@ -95,7 +95,7 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
   else {
     target_dir = cmd->words[1];
   }
-  if (chdir(target_dir) < 0) {
+  if (chdir(target_dir) == -1) {
     dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "cd: target dir invalid\n");
     return -1;
   } else {

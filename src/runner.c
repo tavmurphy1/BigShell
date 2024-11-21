@@ -116,7 +116,7 @@ get_io_flags(enum io_operator io_op)
       break;
     case OP_GREATAND: /* >& */
     case OP_GREAT:    /* > */
-      flags = O_WRONLY | O_CREAT | O_EXCL;      /* TODO DONE */
+      flags = O_WRONLY | O_CREAT;      /* TODO DONE */
       break;
     case OP_DGREAT: /* >> */
       flags = O_APPEND;    /* TODO DONE */
