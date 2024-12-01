@@ -126,9 +126,9 @@ builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
     return -1;
   } else if (cmd->word_count == 2) {
     // handle non numeric argument
-    char *endptr;
-    long int val = strtol(cmd->words[1], &endptr, 10);
-    if (*endptr != '\0') {
+    char *end;
+    long int val = strtol(cmd->words[1], &end, 10);
+    if (*end != '\0') {
       dprintf(get_pseudo_fd(redir_list, STDERR_FILENO), "exit: non numeric argument\n");
       return -1;
     } else {
