@@ -60,7 +60,7 @@ wait_on_fg_pgid(pid_t const pgid)
           params.status = WEXITSTATUS(status);
         } else if (WIFSIGNALED(status)) {
           /* TODO DONE set params.status to the correct value */
-          params.status = WTERMSIG(status);
+          params.status = 128 + WTERMSIG(status);
         }
         /* TODO remove the job for this group from the job list
          *  see jobs.h
