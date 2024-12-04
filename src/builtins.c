@@ -118,7 +118,7 @@ builtin_cd(struct command *cmd, struct builtin_redir const *redir_list)
 static int
 builtin_exit(struct command *cmd, struct builtin_redir const *redir_list)
 {
-  /* TODO: Set params.status to the appropriate value before exiting DONE */
+  /* TODO DONE: Set params.status to the appropriate value before exiting DONE */
 
   // handle too many args
   if (cmd->word_count > 2) {

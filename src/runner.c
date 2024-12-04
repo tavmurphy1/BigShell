@@ -116,16 +116,16 @@ get_io_flags(enum io_operator io_op)
       break;
     case OP_GREATAND: /* >& */
     case OP_GREAT:    /* > */
-      flags = O_WRONLY | O_CREAT;      /* TODO DONE */
+      flags = O_WRONLY | O_CREAT | O_EXCL;      /* TODO DONE */
       break;
     case OP_DGREAT: /* >> */
-      flags = O_APPEND;    /* TODO DONE */
+      flags = O_WRONLY | O_CREAT | O_APPEND;    /* TODO DONE */
       break;
     case OP_LESSGREAT: /* <> */
       flags = O_RDWR;       /* TODO */
       break;
     case OP_CLOBBER: /* >| */
-      flags = O_TRUNC;     /* TODO */
+      flags = O_WRONLY | O_CREAT | O_TRUNC;     /* TODO */
       break;
   }
   return flags;
@@ -165,7 +165,7 @@ move_fd(int src, int dst)
  *
  * This function performs all of the normal i/o redirection, but doesn't
  * overwrite any existing open files. Instead, it performs virtual redirections,
- * maintainig a list of what /would/ have changed if the redirection was
+ * maintaining a list of what /would/ have changed if the redirection was
  * actually performed. The builtins refer to this list to access the correct
  * file descriptors for i/o.
  *
@@ -247,7 +247,7 @@ do_builtin_io_redirects(struct command *cmd, struct builtin_redir **redir_list)
     file_open:;
       int flags = get_io_flags(r->io_op);
       gprintf("attempting to open file %s with flags %d", r->filename, flags);
-      /* TODO Open the specified file. */
+      /* TODO DONE Open the specified file. */
       int fd = open(r->filename, flags, 0777);
       if (fd < 0) goto err;
       struct builtin_redir *rec = *redir_list;
@@ -283,7 +283,7 @@ do_builtin_io_redirects(struct command *cmd, struct builtin_redir **redir_list)
  * will only ever happen in forked child processes--and can't affect the shell
  * itself. Iterate over the list of redirections and apply each one in sequence.
  *
- * TODO
+ * TODO DONE
  */
 static int
 do_io_redirects(struct command *cmd)
@@ -347,20 +347,25 @@ do_io_redirects(struct command *cmd)
     file_open:;
       int flags = get_io_flags(r->io_op);
       gprintf("attempting to open file %s with flags %d", r->filename, flags);
-      /* TODO Open the specified file with the appropriate flags and mode
+      /* TODO DONE Open the specified file with the appropriate flags and mode
        *
        * XXX Note: you can supply a mode to open() even if you're not creating a
        * file. it will just ignore that argument.
        */
       int fd = open(r->filename, flags, 00700);
-
-      /* TODO Move the opened file descriptor to the redirection target */
+      if (fd == -1) {
+        goto err;
+      }
+      /* TODO DONE Move the opened file descriptor to the redirection target */
       /* XXX use move_fd() */
-      move_fd(fd, r->io_number);
+      if (move_fd(fd, r->io_number) == -1) {
+        goto err;
+        }
     }
     if (0) {
-    err: /* TODO Anything that can fail should jump here. No silent errors!!! */
+    err: /* TODO DONE Anything that can fail should jump here. No silent errors!!! */
       status = -1;
+      return status;
     }
   }
   return status;
@@ -577,9 +582,8 @@ run_command_list(struct command_list *cl)
          * they are assigned (export_all flag) */
         if (do_variable_assignment(cmd, 1) < 0) err(1, 0);
 
-        /* TODO UNCOMMENT Restore signals to their original values when bigshell was invoked
-         */
-       // if (signal_restore() < 0) err(1, 0);
+        // TODO UNCOMMENT DONE Restore signals to their original values when bigshell was invoked
+        if (signal_restore() < 0) err(1, 0);
 
         /* Execute the command */
         /* [TODO DONE] execute the command described by the list of words
